@@ -7,7 +7,8 @@ namespace :webpacker do
     if Rails::VERSION::MAJOR >= 5
       exec "#{RbConfig.ruby} #{bin_path}/rails app:template LOCATION=#{install_template_path}"
     else
-      exec "#{RbConfig.ruby} #{bin_path}/rake rails:template LOCATION=#{install_template_path}"
+      ENV["LOCATION"] = binstubs_template_path
+      Rake::Task["rails:template"].execute
     end
   end
 end

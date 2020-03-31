@@ -32,10 +32,20 @@ namespace :webpacker do
         dependencies[name] ||= []
         dependencies[name].each do |dependency|
           dependency_template = File.expand_path("../install/#{dependency}.rb", __dir__)
-          system "#{base_path} LOCATION=#{dependency_template}"
+          if Rails::VERSION::MAJOR >= 5
+            system "#{base_path} LOCATION=#{dependency_template}"
+          else
+            ENV["LOCATION"] = dependency_template
+            Rake::Task["rails:template"].execute
+          end
         end
 
-        exec "#{base_path} LOCATION=#{template}"
+        if Rails::VERSION::MAJOR >= 5
+          exec "#{base_path} LOCATION=#{template}"
+        else
+          ENV["LOCATION"] = template
+          Rake::Task["rails:template"].execute
+        end
       end
     end
   end
